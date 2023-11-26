@@ -1,0 +1,111 @@
+
+//+------------------------------------------------------------------+
+//|                                              Sleep Walker EA MT5 |
+//|                                                      forexroboteasy.com |
+//|                                     Developed by Forex Robot Easy Team |
+//+------------------------------------------------------------------+
+
+// Include necessary libraries
+#include <Trade\Trade.mqh>
+#include <Trade\PositionInfo.mqh>
+
+// Define constants
+#define SYMBOL_GBPUSD 'GBPUSD'
+#define SYMBOL_EURUSD 'EURUSD'
+#define TIMEFRAME_M5  PERIOD_M5
+#define MAX_SLIPPAGE  3
+
+// Define global variables
+CTrade trade;
+CPositionInfo positionInfo;
+
+//+------------------------------------------------------------------+
+//|                     Sleep Walker EA MT5 initialization function                           |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Set the stop loss and profit booking level for pending orders
+    double stopLossLevel = 50;
+    double profitBookingLevel = 100;
+    
+    // Initialize trade and position info objects
+    trade.SetExpertMagicNumber(123456); // Replace with your own magic number
+    positionInfo.SetExpertMagicNumber(123456); // Replace with your own magic number
+    
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//|                     Sleep Walker EA MT5 start function                                      |
+//+------------------------------------------------------------------+
+void OnStart()
+{
+    // Check if the current time is within the desired trading period (night time)
+    if(IsNightTime())
+    {
+        // Calculate the entry points for GBPUSD and EURUSD
+        double gbpusdEntry = CalculateEntry(SYMBOL_GBPUSD);
+        double eurusdEntry = CalculateEntry(SYMBOL_EURUSD);
+        
+        // Place pending orders with stop loss and profit booking levels
+        PlacePendingOrder(SYMBOL_GBPUSD, OP_BUYSTOP, gbpusdEntry, stopLossLevel, profitBookingLevel);
+        PlacePendingOrder(SYMBOL_EURUSD, OP_BUYSTOP, eurusdEntry, stopLossLevel, profitBookingLevel);
+    }
+}
+
+//+------------------------------------------------------------------+
+//|                     Sleep Walker EA MT5 check night time                        |
+//+------------------------------------------------------------------+
+bool IsNightTime()
+{
+    // Get the current time in seconds
+    ulong currentTime = TimeCurrent();
+    
+    // Convert the current time to a struct
+    MqlDateTime currentDateTime;
+    TimeToStruct(currentTime, currentDateTime);
+    
+    // Check if the current time is between 22:00 and 06:00
+    if(currentDateTime.hour >= 22 || currentDateTime.hour < 6)
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+//+------------------------------------------------------------------+
+//|             Sleep Walker EA MT5 calculate entry point for a symbol          |
+//+------------------------------------------------------------------+
+double CalculateEntry(string symbol)
+{
+    // Implement your custom entry calculation logic here
+    // ...
+    // ...
+    // ...
+    // ...
+    
+    return 1.0; // Replace with your calculated entry point
+}
+
+//+------------------------------------------------------------------+
+//|             Sleep Walker EA MT5 place pending order                                          |
+//+------------------------------------------------------------------+
+void PlacePendingOrder(string symbol, int type, double price, double stopLoss, double takeProfit)
+{
+    // Calculate the slippage in points
+    int slippage = MAX_SLIPPAGE * Point;
+    
+    // Place the pending order
+    trade.BuyStop(symbol, volume, price, stopLoss, takeProfit, 'SleepWalkerEA', slippage);
+}
+
+//+------------------------------------------------------------------+
+//|                     Sleep Walker EA MT5 deinitialization function                      |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Clean up any resources used by the EA
+    trade.Deinit();
+    positionInfo.Deinit();
+}
